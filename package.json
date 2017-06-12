@@ -2,7 +2,7 @@
   "name": "swagger-mock-file-generator-by-cases",
   "version": "1.0.1",
   "description": "A generator of mock file base on swagger yaml of JSON",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
