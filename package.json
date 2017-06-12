@@ -1,0 +1,32 @@
+{
+    "name": "swagger-mock-file-generator-by-cases",
+    "version": "1.0.0",
+    "description": "A generator of mock file base on swagger yaml of JSON",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MechanicianW/swagger-mock-file-generator-by-cases.git"
+    },
+    "keywords": [
+        "swagger",
+        "mock"
+    ],
+    "dependencies": {
+        "babel-polyfill": "^6.9.1",
+        "swagger-mock-parser": "^1.1.7",
+        "swagger-parser": "git://github.com/whq731/swagger-parser#releases\/4.0.0"
+    },
+    "devDependencies": {
+        "babel": "^5.6.14",
+        "babel-preset-es2015": "^6.9.0"
+    },
+    "author": "wangyilin06 <wangyilin06@meituan.com> (https://github.com/MechanicianW)",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/MechanicianW/swagger-mock-file-generator-by-cases/issues"
+    },
+    "homepage": "https://github.com/MechanicianW/swagger-mock-file-generator-by-cases#readme"
+}
