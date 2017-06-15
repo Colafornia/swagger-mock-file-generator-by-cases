@@ -8,6 +8,9 @@ exports.default = function (swaggerFile, mockFile, cb) {
     if (!swaggerFile) {
         throw new Error('missing swagger file path');
     }
+    if (!mockFile) {
+        throw new Error('missing target mock file generator directory');
+    }
     var parser = new _swaggerMockParser2.default({ useExample: true });
     var parserPromise = new Promise(function (resolve) {
         _swaggerParser2.default.dereference(swaggerFile, function (err, swagger) {
@@ -15,19 +18,36 @@ exports.default = function (swaggerFile, mockFile, cb) {
             resolve(swagger);
         });
     });
-    parserPromise.then(function (api) {
-        var paths = api.paths;
-        try {
-            mockAllFile(paths).then(function (res) {
-                console.log('success'.green);
-                if (cb) cb();
-            }, function (error) {
-                console.log(error);
+    _fs2.default.readdir(mockFile, function (err, files) {
+        if (err) {
+            return runParser();
+        }
+        if (files.length) {
+            files.forEach(function (file, index) {
+                if (file.indexOf('.json')) dirFileCache.push(file);
+                if (index === files.length - 1) {
+                    runParser();
+                }
             });
-        } catch (e) {
-            console.log(e);
+        } else {
+            runParser();
         }
     });
+
+    function runParser() {
+        parserPromise.then(function (api) {
+            var paths = api.paths;
+            try {
+                mockAllFile(paths).then(function (res) {
+                    if (cb) cb();
+                }, function (error) {
+                    console.log(error);
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    }
 
     function mockAllFile(paths) {
         var promises = [];
@@ -57,11 +77,16 @@ exports.default = function (swaggerFile, mockFile, cb) {
             }
             if (path !== "/") {
                 var filePath = path.split('/').join('-').substring(1);
-                // if (filePath.slice(-1) === '-') filePath.slice(0, -1);
-                filePath = './mock/' + filePath + '.json';
-                promises.push(_fs2.default.writeFileSync(filePath, pathApi, 'utf-8', function (err) {
-                    if (err) throw err;
-                }));
+                // if filename end of '/'
+                // dont convert it to '-'
+                if (filePath.slice(-1) === '-') filePath.replace(/.$/, '/');
+                if (!dirFileCache.includes(filePath + '.json')) {
+                    // incremental updating mock file
+                    filePath = '' + mockFile + filePath + '.json';
+                    promises.push(_fs2.default.writeFileSync(filePath, pathApi, 'utf-8', function (err) {
+                        if (err) throw err;
+                    }));
+                }
             }
         };
         return Promise.all(promises);
@@ -85,3 +110,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 if (!global._babelPolyfill) {
     require('babel-polyfill');
 }
+var dirFileCache = [];
+
+module.exports = exports['default'];

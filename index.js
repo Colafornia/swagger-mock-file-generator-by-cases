@@ -5,10 +5,14 @@ import mockParser from 'swagger-mock-parser';
 if (!global._babelPolyfill) {
     require('babel-polyfill');
 }
+let dirFileCache = [];
 
 export default function(swaggerFile, mockFile, cb) {
     if (!swaggerFile) {
         throw new Error('missing swagger file path');
+    }
+    if (!mockFile) {
+        throw new Error('missing target mock file generator directory');
     }
     let parser = new mockParser({ useExample: true });
     let parserPromise = new Promise((resolve) => {
@@ -17,19 +21,36 @@ export default function(swaggerFile, mockFile, cb) {
             resolve(swagger);
         });
     });
-    parserPromise.then((api) => {
-        let paths = api.paths;
-        try {
-            mockAllFile(paths).then((res) => {
-                console.log('success'.green);
-                if (cb) cb();
-            }, (error) => {
-                console.log(error);
-            });
-        } catch (e) {
-            console.log(e)
+    fs.readdir(mockFile, (err, files) => {
+        if (err) {
+            return runParser()
         }
-    });
+        if (files.length) {
+            files.forEach((file, index) => {
+                if (file.indexOf('.json')) dirFileCache.push(file)
+                if (index === files.length - 1) {
+                    runParser()
+                }
+            });
+        } else {
+            runParser()
+        }
+    })
+
+    function runParser() {
+        parserPromise.then((api) => {
+            let paths = api.paths;
+            try {
+                mockAllFile(paths).then((res) => {
+                    if (cb) cb();
+                }, (error) => {
+                    console.log(error);
+                });
+            } catch (e) {
+                console.log(e)
+            }
+        });
+    }
 
     function mockAllFile(paths) {
         let promises = [];
@@ -59,12 +80,17 @@ export default function(swaggerFile, mockFile, cb) {
                 }
             }
             if (path !== "/") {
-                var filePath = path.split('/').join('-').substring(1);
-                // if (filePath.slice(-1) === '-') filePath.slice(0, -1);
-                filePath = './mock/' + filePath + '.json';
-                promises.push(fs.writeFileSync(filePath, pathApi, 'utf-8', (err) => {
-                    if (err) throw err;
-                }));
+                let filePath = path.split('/').join('-').substring(1);
+                // if filename end of '/'
+                // dont convert it to '-'
+                if (filePath.slice(-1) === '-') filePath.replace(/.$/, '/');
+                if (!dirFileCache.includes(filePath + '.json')) {
+                    // incremental updating mock file
+                    filePath = `${mockFile}${filePath}.json`;
+                    promises.push(fs.writeFileSync(filePath, pathApi, 'utf-8', (err) => {
+                        if (err) throw err;
+                    }));
+                }
             }
         };
         return Promise.all(promises);
