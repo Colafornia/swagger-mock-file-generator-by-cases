@@ -11,7 +11,7 @@ npm i swagger-mock-file-generator-by-cases -s
 ## API
 
 ```jacascript
-require('swagger-mock-file-generator-by-cases')(<swaggerFile>, <mockFile>[, callback])
+require('swagger-mock-file-generator-by-cases')(<swaggerFile>, <mockFilePath>[, callback])
 ```
 
 ## Output
@@ -33,6 +33,6 @@ Data in cases array will give priority to use example in difinitions, you can cu
     ]
 }
 ```
-Notice: mockFile must be an **absolute path string**(eg './').
+Notice: mockFilePath must be an **absolute path string**(eg './mock/').
 
 This generator is based on [swagger-mock-file-generator](https://github.com/whq731/swagger-mock-file-generator/),thanks for supporting!

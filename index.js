@@ -23,17 +23,17 @@ export default function(swaggerFile, mockFile, cb) {
     });
     fs.readdir(mockFile, (err, files) => {
         if (err) {
-            return runParser()
+            return runParser();
         }
         if (files.length) {
             files.forEach((file, index) => {
-                if (file.indexOf('.json')) dirFileCache.push(file)
+                if (file.indexOf('.json') > 0) { dirFileCache.push(file); }
                 if (index === files.length - 1) {
-                    runParser()
+                    runParser();
                 }
             });
         } else {
-            runParser()
+            runParser();
         }
     })
 
@@ -47,7 +47,7 @@ export default function(swaggerFile, mockFile, cb) {
                     console.log(error);
                 });
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
         });
     }
@@ -70,7 +70,7 @@ export default function(swaggerFile, mockFile, cb) {
                                         }
                                         var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example, { status: 0 })
                                         var example = JSON.stringify(exampleObj, null, 4);
-                                        var pathApi = `{"cases": [${example}]}`
+                                        var pathApi = `{"cases": [${example}]}`;
                                     }
                                 }
                             }
@@ -83,7 +83,7 @@ export default function(swaggerFile, mockFile, cb) {
                 let filePath = path.split('/').join('-').substring(1);
                 // if filename end of '/'
                 // dont convert it to '-'
-                if (filePath.slice(-1) === '-') filePath.replace(/.$/, '/');
+                if (filePath.slice(-1) === '-') { filePath.replace(/.$/, '/'); }
                 if (!dirFileCache.includes(filePath + '.json')) {
                     // incremental updating mock file
                     filePath = `${mockFile}${filePath}.json`;
