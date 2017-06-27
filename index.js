@@ -14,7 +14,6 @@ export default function(swaggerFile, mockFile, cb) {
     if (!mockFile) {
         throw new Error('missing target mock file generator directory');
     }
-    let parser = new mockParser({ useExample: true });
     let parserPromise = new Promise((resolve) => {
         swaggerParser.dereference(swaggerFile, (err, swagger) => {
             if (err) throw err;
@@ -66,7 +65,7 @@ export default function(swaggerFile, mockFile, cb) {
                                         if (paths[path][action].responses[resCode].schema.example && paths[path][action].responses[resCode].schema.example !== '') {
                                             continue;
                                         } else {
-                                            paths[path][action].responses[resCode].schema.example = parser.parse(paths[path][action].responses[resCode].schema)
+                                            paths[path][action].responses[resCode].schema.example = new mockParser({useExample: true, fixedArray: true}).parse(paths[path][action].responses[resCode].schema)
                                         }
                                         var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example, { status: 0 })
                                         var example = JSON.stringify(exampleObj, null, 4);

@@ -11,7 +11,6 @@ exports.default = function (swaggerFile, mockFile, cb) {
     if (!mockFile) {
         throw new Error('missing target mock file generator directory');
     }
-    var parser = new _swaggerMockParser2.default({ useExample: true });
     var parserPromise = new Promise(function (resolve) {
         _swaggerParser2.default.dereference(swaggerFile, function (err, swagger) {
             if (err) throw err;
@@ -24,7 +23,9 @@ exports.default = function (swaggerFile, mockFile, cb) {
         }
         if (files.length) {
             files.forEach(function (file, index) {
-                if (file.indexOf('.json')) dirFileCache.push(file);
+                if (file.indexOf('.json') > 0) {
+                    dirFileCache.push(file);
+                }
                 if (index === files.length - 1) {
                     runParser();
                 }
@@ -63,7 +64,7 @@ exports.default = function (swaggerFile, mockFile, cb) {
                                         if (paths[path][action].responses[resCode].schema.example && paths[path][action].responses[resCode].schema.example !== '') {
                                             continue;
                                         } else {
-                                            paths[path][action].responses[resCode].schema.example = parser.parse(paths[path][action].responses[resCode].schema);
+                                            paths[path][action].responses[resCode].schema.example = new _swaggerMockParser2.default({ useExample: true, fixedArray: true }).parse(paths[path][action].responses[resCode].schema);
                                         }
                                         var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example, { status: 0 });
                                         var example = JSON.stringify(exampleObj, null, 4);
@@ -79,7 +80,9 @@ exports.default = function (swaggerFile, mockFile, cb) {
                 var filePath = path.split('/').join('-').substring(1);
                 // if filename end of '/'
                 // dont convert it to '-'
-                if (filePath.slice(-1) === '-') filePath.replace(/.$/, '/');
+                if (filePath.slice(-1) === '-') {
+                    filePath.replace(/.$/, '/');
+                }
                 if (!dirFileCache.includes(filePath + '.json')) {
                     // incremental updating mock file
                     filePath = '' + mockFile + filePath + '.json';
