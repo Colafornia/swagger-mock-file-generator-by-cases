@@ -1,6 +1,6 @@
 {
   "name": "swagger-mock-file-generator-by-cases",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A generator of mock file base on swagger yaml of JSON",
   "main": "dist/index.js",
   "scripts": {
