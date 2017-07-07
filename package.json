@@ -18,7 +18,7 @@
   "dependencies": {
     "babel-polyfill": "^6.9.1",
     "swagger-mock-parser": "^1.1.13",
-    "swagger-parser": "git://github.com/whq731/swagger-parser#releases/4.0.0"
+    "swagger-jsblade-swagger-parser": "4.0.0-beta.2"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

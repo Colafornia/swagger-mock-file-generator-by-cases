@@ -12,7 +12,7 @@ exports.default = function (swaggerFile, mockFile, cb) {
         throw new Error('missing target mock file generator directory');
     }
     var parserPromise = new Promise(function (resolve) {
-        _swaggerParser2.default.dereference(swaggerFile, function (err, swagger) {
+        _swaggerJsbladeSwaggerParser2.default.dereference(swaggerFile, function (err, swagger) {
             if (err) throw err;
             resolve(swagger);
         });
@@ -100,9 +100,9 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _swaggerParser = require('swagger-parser');
+var _swaggerJsbladeSwaggerParser = require('swagger-jsblade-swagger-parser');
 
-var _swaggerParser2 = _interopRequireDefault(_swaggerParser);
+var _swaggerJsbladeSwaggerParser2 = _interopRequireDefault(_swaggerJsbladeSwaggerParser);
 
 var _swaggerMockParser = require('swagger-mock-parser');
 
