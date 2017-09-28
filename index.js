@@ -65,7 +65,7 @@ export default function(swaggerFile, mockFile, cb) {
                                         if (paths[path][action].responses[resCode].schema.example && paths[path][action].responses[resCode].schema.example !== '') {
                                             continue;
                                         } else {
-                                            paths[path][action].responses[resCode].schema.example = new mockParser({useExample: true, fixedArray: true}).parse(paths[path][action].responses[resCode].schema)
+                                            paths[path][action].responses[resCode].schema.example = new mockParser({useExample: true, fixedArray: true, useObjectKey: true}).parse(paths[path][action].responses[resCode].schema)
                                         }
                                         var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example, { status: 0 })
                                         var example = JSON.stringify(exampleObj, null, 4);
