@@ -61,13 +61,8 @@ export default function(swaggerFile, mockFile, cb) {
                             for (let resCode in paths[path][action].responses) {
                                 if (paths[path][action].responses.hasOwnProperty(resCode)) {
                                     if (paths[path][action].responses[resCode].schema) {
-                                        // if example is defined and not empty,on override just skip it
-                                        if (paths[path][action].responses[resCode].schema.example && paths[path][action].responses[resCode].schema.example !== '') {
-                                            continue;
-                                        } else {
-                                            paths[path][action].responses[resCode].schema.example = new mockParser({useExample: true, fixedArray: true, useObjectKey: true}).parse(paths[path][action].responses[resCode].schema)
-                                        }
-                                        var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example, { status: 0 })
+                                        // use existing example or create new one with object key as its value
+                                        var exampleObj = Object.assign(paths[path][action].responses[resCode].schema.example || new mockParser({useExample: true, fixedArray: true, useObjectKey: true}).parse(paths[path][action].responses[resCode].schema), { status: 0 })
                                         var example = JSON.stringify(exampleObj, null, 4);
                                         var pathApi = `{"cases": [${example}]}`;
                                     }
