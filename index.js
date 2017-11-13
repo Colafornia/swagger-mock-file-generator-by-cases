@@ -7,19 +7,30 @@ if (!global._babelPolyfill) {
 }
 let dirFileCache = [];
 
-export default function(swaggerFile, mockFile, cb) {
-    if (!swaggerFile) {
-        throw new Error('missing swagger file path');
+export default function(swaggerFiles, mockFile, cb) {
+    if (!swaggerFiles) {
+        throw new Error('missing swagger files path');
     }
     if (!mockFile) {
         throw new Error('missing target mock file generator directory');
     }
-    let parserPromise = new Promise((resolve) => {
-        swaggerParser.dereference(swaggerFile, (err, swagger) => {
-            if (err) throw err;
-            resolve(swagger);
+
+    let files = [];
+    if (Array.isArray(swaggerFiles)) {
+        files = swaggerFiles;
+    } else {
+        files = [swaggerFiles];
+    }
+
+    function parserPromiseFunc (swaggerFile) {
+        return new Promise((resolve) => {
+            swaggerParser.dereference(swaggerFile, (err, swagger) => {
+                if (err) throw err;
+                resolve(swagger);
+            });
         });
-    });
+    }
+
     fs.readdir(mockFile, (err, files) => {
         if (err) {
             return runParser();
@@ -37,18 +48,22 @@ export default function(swaggerFile, mockFile, cb) {
     })
 
     function runParser() {
-        parserPromise.then((api) => {
-            let paths = api.paths;
-            try {
-                mockAllFile(paths).then((res) => {
-                    if (cb) cb();
-                }, (error) => {
-                    console.log(error);
+        if (files) {
+            files.forEach((filePath, index) => {
+                parserPromiseFunc(filePath).then((api) => {
+                    let paths = api.paths;
+                    try {
+                        mockAllFile(paths).then((res) => {
+                            if (cb && index === files.length - 1) cb();
+                        }, (error) => {
+                            console.log(error);
+                        });
+                    } catch (e) {
+                        console.log(e);
+                    }
                 });
-            } catch (e) {
-                console.log(e);
-            }
-        });
+            })
+        }
     }
 
     function mockAllFile(paths) {
